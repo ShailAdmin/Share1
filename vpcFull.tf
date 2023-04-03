@@ -12,9 +12,9 @@ resource "aws_vpc" "vpc1" {
 }
 
 resource "aws_internet_gateway" "IGWY1" {
-  vpc_id = aws_vpc.IGY1.id
+  vpc_id = aws_vpc.vpc1.id
   tags = {
-    Name = "${var.igwytag"
+    Name = "${var.igwytag}"
   }
 }
 
