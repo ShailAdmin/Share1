@@ -1,0 +1,48 @@
+---
+- name: Create EBS volume and launch EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    snapshot_id: "snap-0123456789abcdef"  # replace with actual snapshot ID
+    region: "us-west-2"  # replace with desired region
+    device_name: "/dev/xvdf"  # replace with desired device name
+    volume_size: 50  # replace with desired volume size in GB
+    instance_type: "t2.micro"  # replace with desired instance type
+    ami_id: "ami-0123456789abcdef"  # replace with desired AMI ID
+    security_group_ids: ["sg-0123456789abcdef"]  # replace with desired security group IDs
+    subnet_id: "subnet-0123456789abcdef"  # replace with desired subnet ID
+    key_name: "my-key-pair"  # replace with desired key pair name
+
+  tasks:
+    - name: Create EBS volume from snapshot
+      ec2_vol:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        snapshot: "{{ snapshot_id }}"
+        volume_size: "{{ volume_size }}"
+        device_name: "{{ device_name }}"
+        state: present
+      register: ebs_volume
+
+    - name: Launch EC2 instance
+      ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        security_group: "{{ security_group_ids }}"
+        subnet_id: "{{ subnet_id }}"
+        key_name: "{{ key_name }}"
+        volumes:
+          - device_name: "{{ device_name }}"
+            volume_id: "{{ ebs_volume.volume_id }}"
+        state: present
+      register: ec2_instance
+
+    - name: Display EC2 instance information
+      debug:
+        var: ec2_instance
