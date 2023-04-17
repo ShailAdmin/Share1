@@ -29,3 +29,7 @@ for region in aws_regions:
 
 # Print the list of AWS resources
 print(aws_resources)
+
+
+aws configservice get-aggregate-discovered-resources --resource-type AWS::AllSupported --region us-east-1
+
