@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Copy AMIs from one AWS account to another",
+  "mainSteps": [
+    {
+      "name": "copy-ami",
+      "action": "aws:runShellScript",
+      "inputs": {
+        "runCommand": [
+          "aws ec2 describe-images --owners self --query 'Images[].ImageId' --output text | xargs -I {} aws ec2 copy-image --source-image-id {} --source-region <source_region> --region <destination_region> --name {}-copy"
+        ]
+      }
+    }
+  ]
+}
